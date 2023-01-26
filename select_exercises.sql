@@ -55,12 +55,19 @@ Titanic: Music from the Motion Picture
 Nevermind
 The Wall */
 
-SELECT name FROM albums WHERE genre = 'Rock';
-/* 4f There are 5 albums with the genre 'Rock'
+SELECT name FROM albums WHERE genre LIKE '%, Rock%' OR genre LIKE 'Rock%';
+/* 4f There are 12 albums with the genre 'Rock'
+Thriller
+Their Greatest Hits (1971–1975)
+Bad
 Sgt. Pepper's Lonely Hearts Club Band
+Hotel California
+Dirty Dancing
 1
+Dangerous
 Abbey Road
 Born in the U.S.A.
+Brothers in Arms
 Supernatural
 	The query does not include "Hard rock" or "Progressive rock"
 	because they are not an exact match to "Rock" */
