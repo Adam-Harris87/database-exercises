@@ -1,14 +1,17 @@
 USE employees;
 
-SELECT DISTINCT title FROM titles ORDER BY title DESC LIMIT 10;
+SELECT DISTINCT last_name FROM employees ORDER BY last_name DESC LIMIT 10;
 /* 2 List the first 10 distinct last name sorted in descending order.
-Technique Leader
-Staff
-Senior Staff
-Senior Engineer
-Manager
-Engineer
-Assistant Engineer */
+Zykh
+Zyda
+Zwicker
+Zweizig
+Zumaque
+Zultner
+Zucker
+Zuberek
+Zschoche
+Zongker */
 
 SELECT first_name, last_name FROM employees 
 	WHERE (hire_date LIKE '199%') 
