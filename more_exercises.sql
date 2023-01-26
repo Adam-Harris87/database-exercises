@@ -56,7 +56,8 @@ SELECT staff_id, first_name, last_name, address_id, picture, email, store_id, ac
 -- 4a Select the phone and district columns from the address table for addresses in California, England, Taipei, or West Java.
 DESCRIBE address;
 SELECT * FROM address LIMIT 5;
-SELECT phone, district FROM address WHERE district IN ('California', 'England', 'Taipei', 'West Java');
+SELECT phone, district FROM address WHERE district 
+	IN ('California', 'England', 'Taipei', 'West Java');
 
 /* 4b Select the payment id, amount, and payment date columns from the payment table for payments made on 05/25/2005, 05/27/2005, and 05/29/2005. (Use the IN operator and the DATE function, instead of the AND operator as in previous exercises.) */
 SELECT payment_id, amount, payment_date FROM payment 
@@ -70,4 +71,30 @@ SELECT * FROM payment WHERE payment_date
 	BETWEEN '2005-05-25 00:00:00' AND '2005-05-25 23:59:59';
 
 -- 5b Select the film_id, title, and descrition columns from the film table for films where the length of the description is between 100 and 120.
-SELECT film_id, title, descrition FROM film WHERE LENGTH description BETWEEN 100 AND 120;
+SELECT film_id, title, description FROM film 
+	WHERE LENGTH(description) BETWEEN 100 AND 120;
+
+-- 6a Select the following columns from the film table for rows where the description begins with "A Thoughtful".
+SELECT * FROM film WHERE description LIKE 'A Thoughtful%';
+
+-- 6b Select the following columns from the film table for rows where the description ends with the word "Boat".
+SELECT * FROM film WHERE description LIKE '%Boat';
+
+-- 6c Select the following columns from the film table where the description contains the word "Database" and the length of the film is greater than 3 hours.
+SELECT * FROM film WHERE (description LIKE '%Database%') AND (length > 180);
+
+-- 7a Select all columns from the payment table and only include the first 20 rows.
+SELECT * FROM payment LIMIT 20;
+
+-- 7b Select the payment date and amount columns from the payment table for rows where the payment amount is greater than 5, and only select rows whose zero-based index in the result set is between 1000-2000.
+SELECT payment_date, amount FROM payment WHERE (amount > 5)
+	LIMIT 1001 OFFSET 999;
+	
+-- 7c Select all columns from the customer table, limiting results to those where the zero-based index is between 101-200.
+SELECT * FROM customer LIMIT 100 OFFSET 100;
+
+-- 8a Select all columns from the film table and order rows by the length field in ascending order.
+SELECT * FROM film ORDER BY length;
+
+-- 8b Select all distinct ratings from the film table ordered by rating in descending order.
+SELECT DISTINCT rating FROM film ORDER BY rating DESC;
