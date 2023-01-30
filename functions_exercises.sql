@@ -27,8 +27,8 @@ SELECT MIN(salary), MAX(salary)
     
 -- Exercise 6
 SELECT LOWER( CONCAT(
-	LEFT(first_name, 1), 
-	LEFT(last_name, 4), '_', 
+	SUBSTR(first_name, 1, 1), 
+	SUBSTR(last_name, 1, 4), '_', 
     DATE_FORMAT(birth_date, '%m'), 
     DATE_FORMAT(birth_date, '%y')
     )) AS username, 
