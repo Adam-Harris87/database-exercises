@@ -16,21 +16,25 @@ SELECT UPPER(CONCAT(first_name, ' ', last_name)) AS full_name
 SELECT *, DATEDIFF(CURDATE(), hire_date) 
 	FROM employees 
 	WHERE (YEAR(hire_date) BETWEEN 1990 AND 1999)
-	AND (birth_date LIKE '%12-25') 
+		AND (birth_date LIKE '%12-25') 
     ORDER BY hire_date, birth_date DESC;
 
 SHOW TABLES;
 
 -- Exercise 5
 SELECT MIN(salary), MAX(salary)
-	FROM salaries;
+	FROM salaries
+    WHERE to_date = '9999-01-01';
     
 -- Exercise 6
 SELECT LOWER( CONCAT(
 	SUBSTR(first_name, 1, 1), 
-	SUBSTR(last_name, 1, 4), '_', 
+	LEFT(last_name, 4), 
+    '_', 
     DATE_FORMAT(birth_date, '%m'), 
+--  LPAD(MONTH(birth_date, 2, 0),
     DATE_FORMAT(birth_date, '%y')
+--  SUBSTR(birth_date, 3, 2),
     )) AS username, 
     first_name, last_name, birth_date
     FROM employees;

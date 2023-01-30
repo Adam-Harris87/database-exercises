@@ -162,3 +162,71 @@ SELECT f.title, f.description, f.release_year, l.name
 		LEFT JOIN language l
 		ON f.language_id = l.language_id;
         
+/* 9f Select the first_name, last_name, address, address2, city name, district, and postal code columns 
+from the staff table, performing 2 left joins with the address table then the city table to 
+get the address and city related columns. */
+DESCRIBE staff;
+DESCRIBE address;
+DESCRIBE city;
+SELECT s.first_name, s.last_name, a.address, a.address2, c.city, a.district, a.postal_code
+	FROM staff s
+		LEFT JOIN address a
+        ON s.address_id = a.address_id
+        LEFT JOIN city c
+        ON a.city_id = c.city_id;
+        
+-- 2.1 Display the first and last names in all lowercase of all the actors.
+SELECT LOWER(first_name), LOWER(last_name)
+	FROM actor;
+    
+/* 2.2 You need to find the ID number, first name, and last name of an actor, of whom you know only the first name, "Joe." 
+What is one query would you could use to obtain this information? */
+DESCRIBE actor;
+SELECT actor_id, first_name, last_name
+	FROM actor
+    WHERE first_name = 'Joe';
+    
+-- 2.3 Find all actors whose last name contain the letters "gen":
+SELECT * FROM actor
+	WHERE last_name LIKE '%gen%';
+
+/* 2.4 Find all actors whose last names contain the letters "li". 
+This time, order the rows by last name and first name, in that order. */
+SELECT * FROM actor
+	WHERE last_name LIKE '%li%'
+    ORDER BY last_name, first_name;
+    
+/* 2.5 Using IN, display the country_id and country columns for the following 
+countries: Afghanistan, Bangladesh, and China: */
+SELECT country_id, country FROM country
+	WHERE country IN ('Afghanistan', 'Bangladesh', 'China');
+    
+-- 2.6 List the last names of all the actors, as well as how many actors have that last name.
+SELECT last_name, COUNT(last_name) 
+	FROM actor
+    GROUP BY last_name;
+    
+/* 2.7 List last names of actors and the number of actors who have that last name, 
+but only for names that are shared by at least two actors */
+SELECT last_name, COUNT(last_name) 
+	FROM actor
+    GROUP BY last_name
+    HAVING COUNT(last_name) >= 2;
+    
+-- 2.8 You cannot locate the schema of the address table. Which query would you use to re-create it?
+SHOW CREATE TABLE address;
+
+-- 2.9 Use JOIN to display the first and last names, as well as the address, of each staff member.
+DESCRIBE staff;
+DESCRIBE address;
+SELECT s.first_name, s.last_name, a.address
+	FROM staff s
+		JOIN address a
+        ON s.address_id = a.address_id;
+        
+-- 2.10 Use JOIN to display the total amount rung up by each staff member in August of 2005.
+SELECT s.first_name, s.last_name, COUNT(p.amount) AS total_amount
+	FROM staff s
+		LEFT JOIN payment p
+        ON s.staff_id = p.staff_id
+	GROUP BY s.staff_id;
