@@ -256,3 +256,57 @@ SELECT f.title, COUNT(i.film_id) AS num_copies
 /* 2.13 The music of Queen and Kris Kristofferson have seen an unlikely resurgence. 
 As an unintended consequence, films starting with the letters K and Q have also soared in popularity. 
 Use subqueries to display the titles of movies starting with the letters K and Q whose language is English. */
+DESCRIBE language;
+SELECT f.title, l.name AS language
+	FROM film f
+		JOIN language l
+        ON f.language_id = l.language_id
+	WHERE ((f.title LIKE 'k%')
+		OR (f.title LIKE 'q%'))
+        AND (l.name = 'english')
+	ORDER BY f.title;
+    
+-- 2.14 Use subqueries to display all actors who appear in the film Alone Trip.
+DESCRIBE film;
+DESCRIBE actor;
+DESCRIBE film_actor;
+SELECT CONCAT (a.first_name, '_', a.last_name) AS actor
+	FROM actor a
+		JOIN film_actor fa
+        ON a.actor_id = fa.actor_id
+        JOIN film f
+        ON f.film_id = fa.film_id
+	WHERE f.title = 'Alone Trip'
+    ORDER BY actor;
+    
+/* 2.15 You want to run an email marketing campaign in Canada, 
+for which you will need the names and email addresses of all Canadian customers. */
+DESCRIBE customer;
+DESCRIBE address;
+DESCRIBE city;
+DESCRIBE country;
+SELECT c.first_name, c.last_name, c.email
+	FROM customer c
+		LEFT JOIN address a
+        ON c.address_id = a.address_id
+        LEFT JOIN city ci
+        ON a.city_id = ci.city_id
+		JOIN country co
+        ON ci.country_id = co.country_id
+	WHERE co.country = 'Canada';
+
+/* 2.16 Sales have been lagging among young families, and you wish to target all family movies for a promotion. 
+Identify all movies categorized as famiy films. */
+DESCRIBE film;
+SHOW tables;
+DESCRIBE film_category;
+DESCRIBE category;
+SELECT f.title
+	FROM film f
+		JOIN film_category fc
+        ON f.film_id = fc.film_id
+        JOIN category c
+        ON fc.category_id = c.category_id
+	WHERE c.name = 'family';
+    
+-- 2.17 Write a query to display how much business, in dollars, each store brought in.
