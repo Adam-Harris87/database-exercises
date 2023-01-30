@@ -310,3 +310,30 @@ SELECT f.title
 	WHERE c.name = 'family';
     
 -- 2.17 Write a query to display how much business, in dollars, each store brought in.
+DESCRIBE sales_by_store;
+SELECT store, total_sales
+	FROM sales_by_store;
+    
+-- 2.18 Write a query to display for each store its store ID, city, and country.
+DESCRIBE store;
+DESCRIBE address;
+DESCRIBE city;
+DESCRIBE country;
+SELECT s.store_id, ci.city, co.country
+	FROM store s
+		JOIN address a
+        ON s.address_id = a.address_id
+        JOIN city ci
+        ON a.city_id = ci.city_id
+        JOIN country co
+        ON ci.country_id = co.country_id;
+        
+/* 2.19 List the top five genres in gross revenue in descending order. 
+Hint: you may need to use the following tables: category, film_category, inventory, payment, and rental. */
+DESCRIBE category;
+DESCRIBE film_category;
+DESCRIBE inventory;
+DESCRIBE payment;
+DESCRIBE rental;
+SELECT c.name AS genre, p.payment + r.rental AS revenue
+	
