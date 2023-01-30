@@ -230,3 +230,29 @@ SELECT s.first_name, s.last_name, COUNT(p.amount) AS total_amount
 		LEFT JOIN payment p
         ON s.staff_id = p.staff_id
 	GROUP BY s.staff_id;
+    
+-- 2.11 List each film and the number of actors who are listed for that film.
+DESCRIBE film;
+DESCRIBE actor;
+SHOW tables;
+DESCRIBE film_actor;
+SELECT f.title, COUNT(fa.actor_id) AS num_actors
+	FROM film f
+		JOIN film_actor fa
+        ON f.film_id = fa.film_id
+	GROUP BY f.title
+    ORDER BY f.title;
+
+-- 2.12 How many copies of the film Hunchback Impossible exist in the inventory system?
+DESCRIBE inventory;
+DESCRIBE film;
+DESCRIBE store;
+SELECT f.title, COUNT(i.film_id) AS num_copies
+	FROM film f
+		JOIN inventory i
+		ON f.film_id = i.film_id
+	WHERE f.title = 'Hunchback Impossible';
+    
+/* 2.13 The music of Queen and Kris Kristofferson have seen an unlikely resurgence. 
+As an unintended consequence, films starting with the letters K and Q have also soared in popularity. 
+Use subqueries to display the titles of movies starting with the letters K and Q whose language is English. */
