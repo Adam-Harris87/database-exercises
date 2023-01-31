@@ -133,3 +133,60 @@ SELECT e.first_name, e.last_name
     LIMIT 1;
     
 -- 2-9 Which current department manager has the highest salary?
+SELECT e.first_name, e.last_name, s.salary, d.dept_name
+	FROM employees e
+	JOIN dept_manager dm
+		ON e.emp_no = dm.emp_no
+	JOIN salaries s
+		ON e.emp_no = s.emp_no
+	JOIN departments d
+		ON dm.dept_no = d.dept_no
+	WHERE (dm.to_date = '9999-01-01')
+		AND (s.to_date = '9999-01-01')
+	ORDER BY s.salary DESC
+    LIMIT 1;
+    
+-- 2-10 Determine the average salary for each department. 
+-- Use all salary information and round your results.
+SELECT d.dept_name, ROUND(AVG(s.salary), 0) AS average_salary
+	FROM departments d
+    JOIN dept_emp de
+		ON d.dept_no = de.dept_no
+	JOIN employees e
+		ON de.emp_no = e.emp_no
+    JOIN salaries s
+		ON e.emp_no = s.emp_no
+	GROUP BY d.dept_name
+    ORDER BY average_salary DESC;
+    
+-- 2-11 Bonus Find the names of all current employees, their department name, and their current manager's name.
+SELECT CONCAT(e.first_name, ' ', e.last_name) AS 'Employee Name',
+	d.dept_name AS 'Department Name',
+    CONCAT(dme.first_name, ' ', dme.last_name) AS 'Department Manager'
+    FROM employees e
+    JOIN dept_emp de
+		ON e.emp_no = de.emp_no
+	JOIN departments d
+		ON de.dept_no = d.dept_no
+	JOIN dept_manager dm
+		ON dm.dept_no = d.dept_no
+	JOIN employees dme
+		ON dm.emp_no = dme.emp_no
+	WHERE (de.to_date = '9999-01-01')
+		AND (dm.to_date = '9999-01-01')
+	ORDER BY d.dept_name, e.last_name, e.first_name;
+    
+-- 2-12 Bonus Who is the highest paid employee within each department.
+SELECT CONCAT(e.first_name, ' ', e.last_name) AS Employee_Name,
+	d.dept_name, s.salary -- MAX(s.salary)
+    FROM employees e
+    JOIN dept_emp de
+		ON e.emp_no = de.emp_no
+	JOIN departments d
+		ON de.dept_no = d.dept_no
+	JOIN salaries s
+		ON e.emp_no = s.emp_no
+	WHERE (s.to_date = '9999-01-01')
+		AND (de.to_date = '9999-01-01')
+	-- GROUP BY d.dept_name
+    ORDER BY d.dept_name, s.salary DESC
