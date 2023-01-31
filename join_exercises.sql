@@ -178,7 +178,7 @@ SELECT CONCAT(e.first_name, ' ', e.last_name) AS 'Employee Name',
     
 -- 2-12 Bonus Who is the highest paid employee within each department.
 SELECT CONCAT(e.first_name, ' ', e.last_name) AS Employee_Name,
-	d.dept_name, s.salary -- MAX(s.salary)
+	d.dept_name, s.salary
     FROM employees e
     JOIN dept_emp de
 		ON e.emp_no = de.emp_no
@@ -188,5 +188,10 @@ SELECT CONCAT(e.first_name, ' ', e.last_name) AS Employee_Name,
 		ON e.emp_no = s.emp_no
 	WHERE (s.to_date = '9999-01-01')
 		AND (de.to_date = '9999-01-01')
-	-- GROUP BY d.dept_name
-    ORDER BY d.dept_name, s.salary DESC
+        AND (de.dept_no, s.salary) IN (
+			SELECT dept_emp.dept_no, MAX(salaries.salary)
+            FROM salaries 
+            JOIN dept_emp
+				ON salaries.emp_no = dept_emp.emp_no
+			GROUP BY dept_emp.dept_no)
+    ORDER BY d.dept_name
