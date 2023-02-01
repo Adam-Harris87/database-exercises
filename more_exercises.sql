@@ -39,7 +39,8 @@ SELECT * FROM customer WHERE (last_name LIKE 's%') AND (first_name LIKE '%n');
 -- 3e Select all columns from the customer table for rows where the customer is inactive or has a last name beginning with "M".
 SELECT * FROM customer WHERE (active = 0) OR (last_name LIKE 'm%');
 
--- 3f Select all columns from the category table for rows where the primary key is greater than 4 and the name field begins with either C, S or T.
+/* 3f Select all columns from the category table for rows where the primary key is greater than 4 and the name 
+field begins with either C, S or T. */
 DESCRIBE category;
 SELECT * from category WHERE (category_id > 4) 
 	AND (name LIKE 'c%' OR name LIKE 's%' OR name LIKE 't%');
@@ -59,7 +60,9 @@ SELECT * FROM address LIMIT 5;
 SELECT phone, district FROM address WHERE district 
 	IN ('California', 'England', 'Taipei', 'West Java');
 
-/* 4b Select the payment id, amount, and payment date columns from the payment table for payments made on 05/25/2005, 05/27/2005, and 05/29/2005. (Use the IN operator and the DATE function, instead of the AND operator as in previous exercises.) */
+/* 4b Select the payment id, amount, and payment date columns from the payment table for payments made 
+on 05/25/2005, 05/27/2005, and 05/29/2005. 
+(Use the IN operator and the DATE function, instead of the AND operator as in previous exercises.) */
 SELECT payment_id, amount, payment_date FROM payment 
 	WHERE DATE(payment_date) IN ('2005-05-25', '2005-05-27', '2005-05-29');
 
@@ -70,7 +73,8 @@ SELECT * FROM film WHERE rating IN ('G', 'PG-13', 'NC-17');
 SELECT * FROM payment WHERE payment_date 
 	BETWEEN '2005-05-25 00:00:00' AND '2005-05-25 23:59:59';
 
--- 5b Select the film_id, title, and descrition columns from the film table for films where the length of the description is between 100 and 120.
+/* 5b Select the film_id, title, and descrition columns from the film table for films where the length of the 
+description is between 100 and 120. */
 SELECT film_id, title, description FROM film 
 	WHERE LENGTH(description) BETWEEN 100 AND 120;
 
@@ -80,13 +84,15 @@ SELECT * FROM film WHERE description LIKE 'A Thoughtful%';
 -- 6b Select the following columns from the film table for rows where the description ends with the word "Boat".
 SELECT * FROM film WHERE description LIKE '%Boat';
 
--- 6c Select the following columns from the film table where the description contains the word "Database" and the length of the film is greater than 3 hours.
+/* 6c Select the following columns from the film table where the description contains the word "Database" 
+and the length of the film is greater than 3 hours. */
 SELECT * FROM film WHERE (description LIKE '%Database%') AND (length > 180);
 
 -- 7a Select all columns from the payment table and only include the first 20 rows.
 SELECT * FROM payment LIMIT 20;
 
--- 7b Select the payment date and amount columns from the payment table for rows where the payment amount is greater than 5, and only select rows whose zero-based index in the result set is between 1000-2000.
+/* 7b Select the payment date and amount columns from the payment table for rows where the payment amount is greater than 5, 
+and only select rows whose zero-based index in the result set is between 1000-2000. */
 SELECT payment_date, amount FROM payment WHERE (amount > 5)
 	LIMIT 1001 OFFSET 999;
 	
@@ -99,11 +105,14 @@ SELECT * FROM film ORDER BY length;
 -- 8b Select all distinct ratings from the film table ordered by rating in descending order.
 SELECT DISTINCT rating FROM film ORDER BY rating DESC;
 
--- 8c Select the payment date and amount columns from the payment table for the first 20 payments ordered by payment amount in descending order.
+/* 8c Select the payment date and amount columns from the payment table for the first 20 payments 
+ordered by payment amount in descending order. */
 SELECT payment_date, amount FROM payment 
 	ORDER BY amount DESC LIMIT 20;
 	
--- 8d Select the title, description, special features, length, and rental duration columns from the film table for the first 10 films with behind the scenes footage under 2 hours in length and a rental duration between 5 and 7 days, ordered by length in descending order.
+/* 8d Select the title, description, special features, length, and rental duration columns from the film table 
+for the first 10 films with behind the scenes footage under 2 hours in length and a rental duration between 5 and 7 days, 
+ordered by length in descending order. */
 DESCRIBE film;
 SELECT special_features FROM film LIMIT 5;
 SELECT title, description, special_features, length, rental_duration FROM film 
