@@ -383,4 +383,84 @@ ORDER BY total desc
 LIMIT 5;
 
 -- 3.4 What are the most most profitable films (in terms of gross revenue)?
-SELECT f.title, 
+SELECT f.title, SUM(p.amount) AS total
+FROM film f
+	JOIN inventory i
+	ON f.film_id = i.film_id
+	JOIN rental r
+	ON i.inventory_id = r.inventory_id
+	JOIN payment p
+	ON r.rental_id = p.rental_id
+GROUP BY f.title
+ORDER BY total DESC
+LIMIT 5;
+
+-- 3.5 Who is the best customer?
+SHOW TABLES;
+DESCRIBE customer;
+DESCRIBE rental;
+
+SELECT CONCAT(c.last_name, ', ', c.first_name) AS name,
+	SUM(p.amount) AS total
+FROM customer c
+	JOIN rental r
+    ON c.customer_id = r.customer_id
+    JOIN payment p
+    ON r.rental_id = p.rental_id
+GROUP BY name
+ORDER BY total DESC
+LIMIT 1;
+
+-- 3.6 Who are the most popular actors (that have appeared in the most films)?
+SELECT CONCAT(a.last_name, ', ', a.first_name) AS actor_name,
+	COUNT(fa.film_id) AS total
+FROM actor a
+	JOIN film_actor fa
+    ON a.actor_id = fa.actor_id
+GROUP BY actor_name
+ORDER BY total DESC
+LIMIT 5;
+
+-- 3.7 What are the sales for each store for each month in 2005?
+SELECT DATE_FORMAT(p.payment_date, '%b') AS month,
+	i.store_id, SUM(p.amount) AS sales
+FROM payment p
+	JOIN rental r
+    ON p.rental_id = r.rental_id
+    JOIN inventory i
+    ON r.inventory_id = i.inventory_id
+WHERE YEAR(p.payment_date) = '2005'
+GROUP BY month, i.store_id
+ORDER BY month DESC, i.store_id;
+
+-- 3.8 Bonus: Find the film title, customer name, customer phone number, and customer address for all the outstanding DVDs.
+SELECT f.title,
+	CONCAT(c.last_name, ', ', c.first_name) AS customer_name,
+    a.phone, a.address
+FROM rental r
+	JOIN inventory i
+    ON r.inventory_id = i.inventory_id
+    JOIN film f
+    ON i.film_id = f.film_id
+    JOIN customer c
+    ON r.customer_id = c.customer_id
+    JOIN address a
+    ON c.address_id = a.address_id
+WHERE r.return_date IS NULL;
+
+/* 4.1 How much do the current managers of each department get paid, relative to the average salary for the department? 
+Is there any department where the department manager gets paid less than the average salary? */
+USE employees;
+SHOW TABLES;
+describe salaries;
+describe dept_manager;
+
+SELECT d.dept_name, COUNT(dm.emp_no), COUNT(de.emp_no)
+FROM departments d
+	JOIN dept_manager dm
+    ON d.dept_no = dm.dept_no
+    JOIN dept_emp de
+    ON d.dept_no = de.dept_no
+WHERE (dm.to_date = '9999-01-01')
+	AND (de.to_date = '9999-01-01')
+GROUP BY d.dept_name;
