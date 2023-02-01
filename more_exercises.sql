@@ -301,32 +301,35 @@ DESCRIBE film;
 SHOW tables;
 DESCRIBE film_category;
 DESCRIBE category;
+
 SELECT f.title
-	FROM film f
-		JOIN film_category fc
-        ON f.film_id = fc.film_id
-        JOIN category c
-        ON fc.category_id = c.category_id
-	WHERE c.name = 'family';
+FROM film f
+	JOIN film_category fc
+	ON f.film_id = fc.film_id
+	JOIN category c
+	ON fc.category_id = c.category_id
+WHERE c.name = 'family';
     
 -- 2.17 Write a query to display how much business, in dollars, each store brought in.
 DESCRIBE sales_by_store;
+
 SELECT store, total_sales
-	FROM sales_by_store;
+FROM sales_by_store;
     
 -- 2.18 Write a query to display for each store its store ID, city, and country.
 DESCRIBE store;
 DESCRIBE address;
 DESCRIBE city;
 DESCRIBE country;
+
 SELECT s.store_id, ci.city, co.country
-	FROM store s
-		JOIN address a
-        ON s.address_id = a.address_id
-        JOIN city ci
-        ON a.city_id = ci.city_id
-        JOIN country co
-        ON ci.country_id = co.country_id;
+FROM store s
+	JOIN address a
+	ON s.address_id = a.address_id
+	JOIN city ci
+	ON a.city_id = ci.city_id
+	JOIN country co
+	ON ci.country_id = co.country_id;
         
 /* 2.19 List the top five genres in gross revenue in descending order. 
 Hint: you may need to use the following tables: category, film_category, inventory, payment, and rental. */
@@ -335,5 +338,47 @@ DESCRIBE film_category;
 DESCRIBE inventory;
 DESCRIBE payment;
 DESCRIBE rental;
-SELECT c.name AS genre, p.payment + r.rental AS revenue
-	
+
+SELECT c.name AS genre, SUM(p.amount) AS revenue
+FROM category c
+	JOIN film_category fc
+    ON c.category_id = fc.category_id
+    JOIN inventory i
+    ON fc.film_id = i.film_id
+    JOIN rental r
+    ON i.inventory_id = r.inventory_id
+    JOIN payment p
+    ON r.rental_id = p.rental_id
+GROUP BY genre
+ORDER BY revenue DESC
+LIMIT 5;
+
+-- 3.1 What is the average replacement cost of a film? Does this change depending on the rating of the film?
+SHOW TABLES;
+DESCRIBE film;
+
+SELECT AVG(replacement_cost)
+FROM film;
+
+SELECT rating, AVG(replacement_cost)
+FROM film
+GROUP BY rating;
+
+-- 3.2 How many different films of each genre are in the database?
+SELECT c.name, COUNT(fc.film_id) AS count
+FROM category c
+	JOIN film_category fc
+    ON c.category_id = fc.category_id
+GROUP BY c.name;
+
+-- 3.3 What are the 5 frequently rented films?
+SELECT f.title, COUNT(r.rental_id) AS total
+FROM film f
+	JOIN inventory i
+    ON f.film_id = i.film_id
+    JOIN rental r
+    ON i.inventory_id = r.inventory_id
+GROUP BY f.title
+ORDER BY total desc
+LIMIT 5;
+
