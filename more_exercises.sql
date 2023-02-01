@@ -528,3 +528,34 @@ ORDER BY life_expectancy;
 SELECT name, localName
 FROM country
 WHERE name <> localName;
+
+-- 5.8 How many countries have a life expectancy less than x?
+SELECT COUNT(*)
+FROM country
+WHERE lifeExpectancy < 10;
+
+-- 5.9 What state is city x located in?
+SELECT name, district
+FROM city 
+WHERE name LIKE '%x%';
+
+-- 5.10 What region of the world is city x located in?
+SELECT ci.name, co.region 
+FROM city ci
+	JOIN country co
+	ON ci.countryCode = co.code
+WHERE ci.name LIKE '%x%';
+
+-- 5.11 What country (use the human readable name) city x located in?
+SELECT ci.name, co.name
+FROM city ci
+	JOIN country co
+	ON ci.countryCode = co.code
+WHERE ci.name LIKE '%x%';
+
+-- 5.12 What is the life expectancy in city x?
+SELECT ci.name, co.lifeExpectancy
+FROM city ci
+	JOIN country co
+	ON ci.countryCode = co.code
+WHERE ci.name LIKE '%x%';
