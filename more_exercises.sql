@@ -475,3 +475,56 @@ FROM departments d
     ON d.dept_no = de.dept_no
 ORDER BY d.dept_name;
 -- I love when a tricky bit of code finally works right!
+
+USE world;
+SHOW TABLES;
+DESCRIBE city;
+DESCRIBE country;
+DESCRIBE countrylanguage;
+
+-- 5.1 What languages are spoken in Santa Monica?
+SELECT cl.language, cl.percentage
+FROM city ci
+    JOIN countrylanguage cl
+    ON ci.countryCode = cl.countryCode
+WHERE ci.name = 'Santa Monica'
+ORDER BY cl.percentage DESC;
+
+-- 5.2 How many different countries are in each region?
+SELECT region, COUNT(code)
+FROM country
+GROUP BY region
+ORDER BY region;
+
+-- 5.3 What is the population for each region?
+SELECT region, SUM(population) AS population
+FROM country
+GROUP BY region
+ORDER BY population DESC;
+
+-- 5.4 What is the population for each continent?
+SELECT continent, SUM(population) AS population
+FROM country
+GROUP BY continent
+ORDER BY population DESC;
+
+-- 5.5 What is the average life expectancy globally?
+SELECT AVG(LifeExpectancy)
+FROM country;
+
+-- 5.6 What is the average life expectancy for each region, each continent? 
+-- Sort the results from shortest to longest
+SELECT region, AVG(lifeExpectancy) AS life_expectancy
+FROM country
+GROUP BY region
+ORDER BY life_expectancy;
+
+SELECT continent, AVG(lifeExpectancy) AS life_expectancy
+FROM country
+GROUP BY continent
+ORDER BY life_expectancy;
+
+-- 5.7 Find all the countries whose local name is different from the official name
+SELECT name, localName
+FROM country
+WHERE name <> localName;
