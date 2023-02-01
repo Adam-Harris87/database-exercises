@@ -1,116 +1,116 @@
 USE sakila;
 SHOW TABLES;
 
--- 1a Select all columns from the actor table.
+-- 1.1a Select all columns from the actor table.
 SELECT * FROM actor;
 
--- 1b Select only the last_name column from the actor table.
+-- 1.1b Select only the last_name column from the actor table.
 SELECT last_name FROM actor;
 
--- 1c Select only the film_id, title, and release_year columns from the film table.
+-- 1.1c Select only the film_id, title, and release_year columns from the film table.
 SELECT film_id, title, release_year FROM film;
 
--- 2a Select all distinct (different) last names from the actor table.
+-- 1.2a Select all distinct (different) last names from the actor table.
 SELECT DISTINCT last_name FROM actor;
 
 DESCRIBE address;
--- 2b Select all distinct (different) postal codes from the address table.
+-- 1.2b Select all distinct (different) postal codes from the address table.
 SELECT DISTINCT postal_code FROM address;
 
 DESCRIBE film;
--- 2c Select all distinct (different) ratings from the film table.
+-- 1.2c Select all distinct (different) ratings from the film table.
 SELECT DISTINCT rating FROM film;
 
 SELECT length from film LIMIT 5;
--- 3a Select the title, description, rating, movie length columns from the films table that last 3 hours or longer.
+-- 1.3a Select the title, description, rating, movie length columns from the films table that last 3 hours or longer.
 SELECT title, description, rating, length FROM film WHERE length >= 180;
 
--- 3b Select the payment id, amount, and payment date columns from the payments table for payments made on or after 05/27/2005.
+-- 1.3b Select the payment id, amount, and payment date columns from the payments table for payments made on or after 05/27/2005.
 DESCRIBE payment;
 SELECT payment_id, amount, payment_date FROM payment WHERE payment_date >= '2005-05-27';
 
--- 3c Select the primary key, amount, and payment date columns from the payment table for payments made on 05/27/2005
+-- 1.3c Select the primary key, amount, and payment date columns from the payment table for payments made on 05/27/2005
 SELECT payment_id, amount, payment_date FROM payment WHERE payment_date LIKE '2005-05-27%';
 
--- 3d Select all columns from the customer table for rows that have a last names beginning with S and a first names ending with N.
+-- 1.3d Select all columns from the customer table for rows that have a last names beginning with S and a first names ending with N.
 DESCRIBE customer;
 SELECT * FROM customer WHERE (last_name LIKE 's%') AND (first_name LIKE '%n');
 
--- 3e Select all columns from the customer table for rows where the customer is inactive or has a last name beginning with "M".
+-- 1.3e Select all columns from the customer table for rows where the customer is inactive or has a last name beginning with "M".
 SELECT * FROM customer WHERE (active = 0) OR (last_name LIKE 'm%');
 
-/* 3f Select all columns from the category table for rows where the primary key is greater than 4 and the name 
+/* 1.3f Select all columns from the category table for rows where the primary key is greater than 4 and the name 
 field begins with either C, S or T. */
 DESCRIBE category;
 SELECT * from category WHERE (category_id > 4) 
 	AND (name LIKE 'c%' OR name LIKE 's%' OR name LIKE 't%');
 
--- 3g Select all columns minus the password column from the staff table for rows that contain a password.
+-- 1.3g Select all columns minus the password column from the staff table for rows that contain a password.
 DESCRIBE staff;
 SELECT staff_id, first_name, last_name, address_id, picture, email, store_id, active, username, last_update
 	FROM staff WHERE password IS NOT NULL;
 	
--- 3h Select all columns minus the password column from the staff table for rows that do not contain a password.
+-- 1.3h Select all columns minus the password column from the staff table for rows that do not contain a password.
 SELECT staff_id, first_name, last_name, address_id, picture, email, store_id, active, username, last_update
 	FROM staff WHERE password IS NULL;
 
--- 4a Select the phone and district columns from the address table for addresses in California, England, Taipei, or West Java.
+-- 1.4a Select the phone and district columns from the address table for addresses in California, England, Taipei, or West Java.
 DESCRIBE address;
 SELECT * FROM address LIMIT 5;
 SELECT phone, district FROM address WHERE district 
 	IN ('California', 'England', 'Taipei', 'West Java');
 
-/* 4b Select the payment id, amount, and payment date columns from the payment table for payments made 
+/* 1.4b Select the payment id, amount, and payment date columns from the payment table for payments made 
 on 05/25/2005, 05/27/2005, and 05/29/2005. 
 (Use the IN operator and the DATE function, instead of the AND operator as in previous exercises.) */
 SELECT payment_id, amount, payment_date FROM payment 
 	WHERE DATE(payment_date) IN ('2005-05-25', '2005-05-27', '2005-05-29');
 
--- 4c Select all columns from the film table for films rated G, PG-13 or NC-17.
+-- 1.4c Select all columns from the film table for films rated G, PG-13 or NC-17.
 SELECT * FROM film WHERE rating IN ('G', 'PG-13', 'NC-17');
 
--- 5a Select all columns from the payment table for payments made between midnight 05/25/2005 and 1 second before midnight 05/26/2005.
+-- 1.5a Select all columns from the payment table for payments made between midnight 05/25/2005 and 1 second before midnight 05/26/2005.
 SELECT * FROM payment WHERE payment_date 
 	BETWEEN '2005-05-25 00:00:00' AND '2005-05-25 23:59:59';
 
-/* 5b Select the film_id, title, and descrition columns from the film table for films where the length of the 
+/* 1.5b Select the film_id, title, and descrition columns from the film table for films where the length of the 
 description is between 100 and 120. */
 SELECT film_id, title, description FROM film 
 	WHERE LENGTH(description) BETWEEN 100 AND 120;
 
--- 6a Select the following columns from the film table for rows where the description begins with "A Thoughtful".
+-- 1.6a Select the following columns from the film table for rows where the description begins with "A Thoughtful".
 SELECT * FROM film WHERE description LIKE 'A Thoughtful%';
 
--- 6b Select the following columns from the film table for rows where the description ends with the word "Boat".
+-- 1.6b Select the following columns from the film table for rows where the description ends with the word "Boat".
 SELECT * FROM film WHERE description LIKE '%Boat';
 
-/* 6c Select the following columns from the film table where the description contains the word "Database" 
+/* 1.6c Select the following columns from the film table where the description contains the word "Database" 
 and the length of the film is greater than 3 hours. */
 SELECT * FROM film WHERE (description LIKE '%Database%') AND (length > 180);
 
--- 7a Select all columns from the payment table and only include the first 20 rows.
+-- 1.7a Select all columns from the payment table and only include the first 20 rows.
 SELECT * FROM payment LIMIT 20;
 
-/* 7b Select the payment date and amount columns from the payment table for rows where the payment amount is greater than 5, 
+/* 1.7b Select the payment date and amount columns from the payment table for rows where the payment amount is greater than 5, 
 and only select rows whose zero-based index in the result set is between 1000-2000. */
 SELECT payment_date, amount FROM payment WHERE (amount > 5)
 	LIMIT 1001 OFFSET 999;
 	
--- 7c Select all columns from the customer table, limiting results to those where the zero-based index is between 101-200.
+-- 1.7c Select all columns from the customer table, limiting results to those where the zero-based index is between 101-200.
 SELECT * FROM customer LIMIT 100 OFFSET 100;
 
--- 8a Select all columns from the film table and order rows by the length field in ascending order.
+-- 1.8a Select all columns from the film table and order rows by the length field in ascending order.
 SELECT * FROM film ORDER BY length;
 
--- 8b Select all distinct ratings from the film table ordered by rating in descending order.
+-- 1.8b Select all distinct ratings from the film table ordered by rating in descending order.
 SELECT DISTINCT rating FROM film ORDER BY rating DESC;
 
-/* 8c Select the payment date and amount columns from the payment table for the first 20 payments 
+/* 1.8c Select the payment date and amount columns from the payment table for the first 20 payments 
 ordered by payment amount in descending order. */
 SELECT payment_date, amount FROM payment 
 	ORDER BY amount DESC LIMIT 20;
 	
-/* 8d Select the title, description, special features, length, and rental duration columns from the film table 
+/* 1.8d Select the title, description, special features, length, and rental duration columns from the film table 
 for the first 10 films with behind the scenes footage under 2 hours in length and a rental duration between 5 and 7 days, 
 ordered by length in descending order. */
 DESCRIBE film;
@@ -120,7 +120,7 @@ SELECT title, description, special_features, length, rental_duration FROM film
 	AND (rental_duration BETWEEN 5 AND 7)
 	ORDER BY length DESC;
     
-/* 9a Select customer first_name/last_name and actor first_name/last_name columns from performing a left join 
+/* 1.9a Select customer first_name/last_name and actor first_name/last_name columns from performing a left join 
 between the customer and actor column on the last_name column in each table. (i.e. customer.last_name = actor.last_name)
 Label customer first_name/last_name columns as customer_first_name/customer_last_name
 Label actor first_name/last_name columns in a similar fashion. */
@@ -133,7 +133,7 @@ SELECT c.first_name AS customer_first_name, c.last_name AS customer_last_name,
         ON c.last_name = a.last_name
 	ORDER BY c.last_name;
         
-/* 9b Select the customer first_name/last_name and actor first_name/last_name columns from performing 
+/* 1.9b Select the customer first_name/last_name and actor first_name/last_name columns from performing 
 a /right join between the customer and actor column on the last_name column in each table. 
 (i.e. customer.last_name = actor.last_name) */
 SELECT c.first_name AS customer_first_name, c.last_name AS customer_last_name, 
@@ -143,7 +143,7 @@ SELECT c.first_name AS customer_first_name, c.last_name AS customer_last_name,
         ON c.last_name = a.last_name
 	ORDER BY a.last_name;
         
-/* 9c Select the customer first_name/last_name and actor first_name/last_name columns from performing 
+/* 1.9c Select the customer first_name/last_name and actor first_name/last_name columns from performing 
 an inner join between the customer and actor column on the last_name column in each table. 
 (i.e. customer.last_name = actor.last_name) */
 SELECT c.first_name AS customer_first_name, c.last_name AS customer_last_name, 
@@ -153,7 +153,7 @@ SELECT c.first_name AS customer_first_name, c.last_name AS customer_last_name,
         ON c.last_name = a.last_name
 	ORDER BY c.last_name;
         
-/* 9d Select the city name and country name columns from the city table, performing 
+/* 1.9d Select the city name and country name columns from the city table, performing 
 a left join with the country table to get the country name column. */
 DESCRIBE city;
 DESCRIBE country;
@@ -162,7 +162,7 @@ SELECT ci.city, co.country
 		LEFT JOIN country co
         ON ci.country_id = co.country_id;
         
-/* 9e Select the title, description, release year, and language name columns from the film table, performing 
+/* 1.9e Select the title, description, release year, and language name columns from the film table, performing 
 a left join with the language table to get the "language" column. */
 DESCRIBE film;
 DESCRIBE language;
@@ -171,7 +171,7 @@ SELECT f.title, f.description, f.release_year, l.name
 		LEFT JOIN language l
 		ON f.language_id = l.language_id;
         
-/* 9f Select the first_name, last_name, address, address2, city name, district, and postal code columns 
+/* 1.9f Select the first_name, last_name, address, address2, city name, district, and postal code columns 
 from the staff table, performing 2 left joins with the address table then the city table to 
 get the address and city related columns. */
 DESCRIBE staff;
@@ -568,3 +568,7 @@ FROM city ci
 	JOIN country co
 	ON ci.countryCode = co.code
 WHERE ci.name LIKE '%x%';
+
+USE pizza;
+-- 6.1 What information is stored in the toppings table? How does this table relate to the pizzas table?
+SHOW tables;
