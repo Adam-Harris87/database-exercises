@@ -382,3 +382,5 @@ GROUP BY f.title
 ORDER BY total desc
 LIMIT 5;
 
+-- 3.4 What are the most most profitable films (in terms of gross revenue)?
+SELECT f.title, 
