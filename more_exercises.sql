@@ -363,15 +363,13 @@ ORDER BY revenue DESC
 LIMIT 5;
 
 -- 3.1 What is the average replacement cost of a film? Does this change depending on the rating of the film?
-SHOW TABLES;
-DESCRIBE film;
-
 SELECT AVG(replacement_cost)
 FROM film;
 
 SELECT rating, AVG(replacement_cost)
 FROM film
-GROUP BY rating;
+GROUP BY rating
+ORDER BY rating;
 
 -- 3.2 How many different films of each genre are in the database?
 SELECT c.name, COUNT(fc.film_id) AS count
@@ -570,5 +568,63 @@ FROM city ci
 WHERE ci.name LIKE '%x%';
 
 USE pizza;
--- 6.1 What information is stored in the toppings table? How does this table relate to the pizzas table?
+/* 6.1 What information is stored in the toppings table? 
+topping_id, topping_name, topping_price
+How does this table relate to the pizzas table? 
+They are related through the table pizza_toppings, with 1 or multiple topping_ids per pizza_id */
 SHOW tables;
+DESCRIBE toppings;
+DESCRIBE pizzas;
+DESCRIBE pizza_toppings;
+SELECT * FROM pizza_toppings;
+
+/* 6.2 What information is stored in the modifiers table? 
+modifier_id, modifier_name, modifier_price
+How does this table relate to the pizzas table?
+They are related through the table pizza_modifiers, with 0-2 modifiers per pizza_id */
+DESCRIBE modifiers;
+DESCRIBE pizza_modifiers;
+SELECT * FROM modifiers;
+
+/* 6.3 How are the pizzas and sizes tables related? 
+They are related through the table pizzas, with 1 size_id per pizza_id */
+DESCRIBE sizes;
+SELECT * FROM pizzas;
+
+/* 6.4 What other tables are in the database? 
+crust_types which is related to the pizzas table with 1 crust_type per pizza_id */
+SHOW TABLES;
+
+-- 6.5 How many unique toppings are there? 9
+SELECT COUNT(DISTINCT topping_id)
+FROM toppings;
+
+-- 6.6 How many unique orders are in this dataset? 10,000
+SELECT COUNT(DISTINCT order_id)
+FROM pizzas;
+
+-- 6.7 Which size of pizza is sold the most? Large
+SELECT s.size_name, COUNT(*) AS count
+FROM pizzas p
+	JOIN sizes s
+    ON p.size_id = s.size_id
+GROUP BY size_name
+ORDER BY count DESC
+LIMIT 1;
+
+-- 6.8 How many pizzas have been sold in total? 20,001
+SELECT COUNT(DISTINCT pizza_id)
+FROM pizzas;
+
+-- 6.9 What is the most common size of pizza ordered? repeat question? Large
+SELECT s.size_name, COUNT(*) AS count
+FROM pizzas p
+	JOIN sizes s
+    ON p.size_id = s.size_id
+GROUP BY size_name
+ORDER BY count DESC
+LIMIT 1;
+
+-- 6.10 What is the average number of pizzas per order? 2.0001
+SELECT COUNT(DISTINCT pizza_id) / COUNT(DISTINCT order_id)
+FROM pizzas;
