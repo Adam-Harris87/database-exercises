@@ -448,19 +448,30 @@ FROM rental r
     ON c.address_id = a.address_id
 WHERE r.return_date IS NULL;
 
-/* 4.1 How much do the current managers of each department get paid, relative to the average salary for the department? 
-Is there any department where the department manager gets paid less than the average salary? */
 USE employees;
-SHOW TABLES;
-describe salaries;
-describe dept_manager;
-
-SELECT d.dept_name, COUNT(dm.emp_no), COUNT(de.emp_no)
+/* 4.1 How much do the current managers of each department get paid, relative to the average salary for the department? 
+Is there any department where the department manager gets paid less than the average salary? Yes, customer service and production */
+SELECT d.dept_name, manager_salary, average_salary,
+	(manager_salary - average_salary) AS salary_diff
 FROM departments d
-	JOIN dept_manager dm
+	JOIN (
+		SELECT dm.dept_no, s.salary AS manager_salary
+		FROM dept_manager dm
+		JOIN salaries s
+			ON dm.emp_no = s.emp_no
+		WHERE (dm.to_date = '9999-01-01')
+			AND (s.to_date = '9999-01-01')
+	) AS dm
     ON d.dept_no = dm.dept_no
-    JOIN dept_emp de
+	JOIN (
+		SELECT de.dept_no, ROUND(AVG(s.salary), 0) AS average_salary
+		FROM dept_emp de
+        JOIN salaries s
+			ON de.emp_no = s.emp_no
+        WHERE (de.to_date = '9999-01-01')
+			AND (s.to_date = '9999-01-01')
+        GROUP BY de.dept_no
+        ) AS de
     ON d.dept_no = de.dept_no
-WHERE (dm.to_date = '9999-01-01')
-	AND (de.to_date = '9999-01-01')
-GROUP BY d.dept_name;
+ORDER BY d.dept_name;
+-- I love when a tricky bit of code finally works right!
