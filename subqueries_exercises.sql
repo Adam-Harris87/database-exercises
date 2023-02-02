@@ -51,56 +51,49 @@ WHERE salary > (SELECT AVG(salary) FROM salaries)
 ;
 
 /* 6 How many current salaries are within 1 standard deviation of the current highest salary? 
-(Hint: you can use a built in function to calculate the standard deviation.) What percentage of all salaries is this?
+(Hint: you can use a built in function to calculate the standard deviation.) 
+What percentage of all salaries is this?
 Hint You will likely use multiple subqueries in a variety of ways
 Hint It's a good practice to write out all of the small queries that you can. 
 Add a comment above the query showing the number of rows returned. You will use this number 
 (or the query that produced it) in other, larger queries. */
-(SELECT COUNT(*) 
-FROM salaries
-WHERE to_date > NOW());
 
-
-SELECT COUNT(*) AS within_1_stddev
-FROM salaries
-WHERE 
-	(salary > 
-		(SELECT AVG(salary)
-		FROM salaries
-		WHERE to_date = '9999-01-01') -
-		(SELECT STDDEV(salary)
-		FROM salaries
-		WHERE to_date > NOW())
-	AND salary <
-		(SELECT AVG(salary)
-		FROM salaries
-		WHERE to_date = '9999-01-01') +
-		(SELECT STDDEV(salary)
-		FROM salaries
-		WHERE to_date > NOW())
-	)
-	AND (to_date = '9999-01-01')
+SELECT a.*, (within_1_stddev / (SELECT COUNT(salary) FROM salaries) * 100) AS percent_within_1_stddev
+FROM
+	(SELECT
+		(
+			SELECT COUNT(*)
+			FROM salaries
+			WHERE salary > 
+				(
+					SELECT MAX(salary)
+					FROM salaries
+					WHERE to_date = '9999-01-01') -
+					(SELECT STDDEV(salary)
+					FROM salaries
+					WHERE to_date > NOW()
+                )
+				AND (to_date = '9999-01-01')
+		) AS within_1_stddev,
+		(
+			SELECT COUNT(*) 
+			FROM salaries
+			WHERE to_date > NOW()
+		) AS total_current
+	) as a
 ;
 
--- get total within 1 stddev --> 161846 total
+-- get total count of salaries within 1 stddev of max current salary--> 83 total
 SELECT COUNT(*) AS within_1_stddev
 FROM salaries
 WHERE 
-	(salary > 
-		(SELECT AVG(salary)
+	salary > 
+		(SELECT MAX(salary)
 		FROM salaries
 		WHERE to_date = '9999-01-01') -
 		(SELECT STDDEV(salary)
 		FROM salaries
 		WHERE to_date > NOW())
-	AND salary <
-		(SELECT AVG(salary)
-		FROM salaries
-		WHERE to_date = '9999-01-01') +
-		(SELECT STDDEV(salary)
-		FROM salaries
-		WHERE to_date > NOW())
-	)
 	AND (to_date = '9999-01-01')
 ;
 
@@ -109,8 +102,8 @@ SELECT COUNT(*)
 FROM salaries
 WHERE to_date > NOW();
 
--- get avg of current salaries --> 72012.2359
-SELECT AVG(salary)
+-- get max of current salaries --> 158220
+SELECT MAX(salary)
 FROM salaries
 WHERE to_date = '9999-01-01';
 
@@ -118,3 +111,43 @@ WHERE to_date = '9999-01-01';
 SELECT STDDEV(salary)
 FROM salaries
 WHERE to_date > NOW();
+
+-- B1 Find all the department names that currently have female managers.
+SELECT dept_name
+FROM departments
+WHERE dept_no IN
+	(SELECT dept_no
+	FROM dept_manager
+		JOIN employees
+			USING (emp_no)
+	WHERE gender = 'F'
+		AND to_date = '9999-01-01'
+	)
+;
+
+-- B2 Find the first and last name of the employee with the highest salary.
+SELECT first_name, last_name
+FROM employees
+WHERE emp_no =
+	(SELECT emp_no
+    FROM salaries
+    WHERE to_date = '9999-01-01'
+    ORDER BY salary DESC
+    LIMIT 1 
+    )
+;
+
+-- B3 Find the department name that the employee with the highest salary works in.
+SELECT dept_name
+FROM departments
+	JOIN dept_emp de
+		USING (dept_no)
+WHERE emp_no =
+	(SELECT emp_no
+    FROM salaries s
+    WHERE s.to_date = '9999-01-01'
+    ORDER BY salary DESC
+    LIMIT 1
+    )
+    AND de.to_date = '9999-01-01'
+;
