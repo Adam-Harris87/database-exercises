@@ -628,3 +628,125 @@ LIMIT 1;
 -- 6.10 What is the average number of pizzas per order? 2.0001
 SELECT COUNT(DISTINCT pizza_id) / COUNT(DISTINCT order_id)
 FROM pizzas;
+
+/* 6.11 Find the total price for each order. The total price is the sum of:
+The price based on pizza size
+Any modifiers that need to be charged for
+The sum of the topping prices
+Topping price is affected by the amount of the topping specified. A light amount is half of the regular price. 
+An extra amount is 1.5 times the regular price, and double of the topping is double the price. */
+SHOW TABLES;
+SELECT * FROM sizes;
+SELECT * FROM modifiers;
+SELECT * FROM toppings;
+SELECT * FROM pizza_modifiers;
+SELECT * FROM pizza_toppings;
+SELECT * FROM pizzas;
+DESCRIBE pizza_toppings;
+
+SELECT * 
+FROM pizzas
+	LEFT JOIN pizza_modifiers
+		USING (pizza_id)
+	LEFT JOIN pizza_toppings
+		USING (pizza_id)
+	JOIN sizes
+		USING (size_id)
+	LEFT JOIN modifiers
+		USING (modifier_id)
+	LEFT JOIN toppings
+		USING (topping_id)
+;
+
+-- get size cost per pizza_id
+SELECT pizza_id, size_price
+FROM pizzas
+	JOIN sizes
+		USING (size_id)
+GROUP BY pizza_id
+;
+
+-- list of pizza_modifier cost by pizza_id
+SELECT pizza_id,
+	CASE modifier_id
+		WHEN 1 THEN 1.99
+		ELSE 0
+    END AS ext_cost
+FROM pizzas
+	JOIN pizza_modifiers
+		USING (pizza_id)
+;
+
+-- get the topping cost per pizza_id
+SELECT pizza_id, ROUND(SUM(top_price), 2)
+FROM (
+	SELECT pizza_id,
+		CASE topping_amount
+			WHEN 'light' THEN ROUND(topping_price * 0.5, 2)
+			WHEN 'extra' THEN ROUND(topping_price * 1.5, 2)
+			WHEN 'double' THEN ROUND(topping_price * 2, 2)
+			ELSE topping_price
+		END AS top_price
+	FROM pizzas
+		LEFT JOIN pizza_toppings
+			USING (pizza_id)
+		LEFT JOIN toppings
+			USING (topping_id)
+	) AS top_list
+GROUP BY pizza_id
+;
+
+-- Holy crap it works!
+-- Get order totals
+SELECT ROUND(SUM(pizza_cost), 2) AS order_total, order_id 
+FROM
+	-- get overall cost per pizza_id
+	(SELECT pizza_id, (size_price + IFNULL(top_cost, 0) + ext_cost) AS pizza_cost, order_id
+	FROM pizzas
+	LEFT JOIN
+	-- get size cost per pizza_id
+		(SELECT pizza_id, size_price
+		FROM pizzas
+			JOIN sizes
+				USING (size_id)
+		GROUP BY pizza_id
+		) as a
+		USING (pizza_id)
+	LEFT JOIN
+		-- list of pizza_modifier cost by pizza_id
+		(SELECT pizza_id,
+			CASE modifier_id
+				WHEN 1 THEN 1.99
+				WHEN NULL THEN 0
+				ELSE 0
+			END AS ext_cost
+		FROM pizzas
+			LEFT JOIN pizza_modifiers
+				USING (pizza_id)
+		) as b
+		USING (pizza_id)
+	LEFT JOIN
+		-- get the topping cost per pizza_id
+		(SELECT pizza_id, ROUND(SUM(sub_price), 2) AS top_cost
+		FROM (
+			SELECT pizza_id,
+				CASE topping_amount
+					WHEN 'light' THEN ROUND(topping_price * 0.5, 2)
+					WHEN 'extra' THEN ROUND(topping_price * 1.5, 2)
+					WHEN 'double' THEN ROUND(topping_price * 2, 2)
+					ELSE topping_price
+				END AS sub_price
+			FROM pizzas
+				LEFT JOIN pizza_toppings
+					USING (pizza_id)
+				LEFT JOIN toppings
+					USING (topping_id)
+			) AS top_list
+		GROUP BY pizza_id
+		) as c
+		USING (pizza_id)
+	-- ORDER BY pizza_id
+    ) AS totals
+GROUP BY order_id
+ORDER BY order_id
+;
