@@ -69,8 +69,8 @@ SELECT LOWER( CONCAT(
 /* 9 From your previous query, are there any duplicate usernames? yes
 What is the higest number of times a username shows up?  6 times
 
-Bonus: How many duplicate usernames are there from your previous query? 13251 */
-SELECT COUNT(*)
+Bonus: How many duplicate usernames are there from your previous query? 27403 total */
+SELECT SUM(cnt), COUNT(cnt)
 FROM (
 	SELECT LOWER( CONCAT(
 		SUBSTR(first_name, 1, 1), 
@@ -79,6 +79,7 @@ FROM (
 		DATE_FORMAT(birth_date, '%m'), 
 		DATE_FORMAT(birth_date, '%y')
 		)) AS username
+        , COUNT(*) as cnt
     FROM employees
     GROUP BY username
     HAVING COUNT(*) > 1
