@@ -3,20 +3,27 @@ USE employees;
 -- 1 Find all the current employees with the same hire date as employee 101010 using a subquery.
 SELECT *
 FROM employees
+	JOIN dept_emp
+		USING (emp_no)
 WHERE hire_date = (
 	SELECT hire_date
 	FROM employees
 	WHERE emp_no = 101010)
+	AND to_date > NOW()
 ;
 
 -- 2 Find all the titles ever held by all current employees with the first name Aamod.
-SELECT title
+SELECT DISTINCT title
 FROM titles
 WHERE emp_no IN (
 	SELECT emp_no
 	FROM employees
-	WHERE first_name = 'Aamod')
-    AND to_date > CURDATE()
+	WHERE first_name = 'Aamod'
+    )
+    AND emp_no IN (
+		SELECT emp_no
+        FROM dept_emp de
+		WHERE de.to_date > NOW())
 ORDER BY title
 ;
 
@@ -58,7 +65,7 @@ Hint It's a good practice to write out all of the small queries that you can.
 Add a comment above the query showing the number of rows returned. You will use this number 
 (or the query that produced it) in other, larger queries. */
 
-SELECT a.*, (within_1_stddev / (SELECT COUNT(salary) FROM salaries) * 100) AS percent_within_1_stddev
+SELECT a.*, (within_1_stddev / (SELECT COUNT(salary) FROM salaries WHERE to_date > CURDATE()) * 100) AS percent_within_1_stddev
 FROM
 	(SELECT
 		(
@@ -86,15 +93,14 @@ FROM
 -- get total count of salaries within 1 stddev of max current salary--> 83 total
 SELECT COUNT(*) AS within_1_stddev
 FROM salaries
-WHERE 
-	salary > 
+WHERE (to_date = '9999-01-01')
+	AND salary > 
 		(SELECT MAX(salary)
 		FROM salaries
 		WHERE to_date = '9999-01-01') -
 		(SELECT STDDEV(salary)
 		FROM salaries
 		WHERE to_date > NOW())
-	AND (to_date = '9999-01-01')
 ;
 
 -- get total current salaries --> 240124 total
