@@ -70,19 +70,33 @@ SELECT LOWER( CONCAT(
 What is the higest number of times a username shows up?  6 times
 
 Bonus: How many duplicate usernames are there from your previous query? 13251 */
-CREATE TEMPORARY TABLE oneil_2093.dup_users AS
-SELECT LOWER( CONCAT(
-	SUBSTR(first_name, 1, 1), 
-	LEFT(last_name, 4), 
-    '_', 
-    DATE_FORMAT(birth_date, '%m'), 
-    DATE_FORMAT(birth_date, '%y')
-    )) AS username
+SELECT COUNT(*)
+FROM (
+	SELECT LOWER( CONCAT(
+		SUBSTR(first_name, 1, 1), 
+		LEFT(last_name, 4), 
+		'_', 
+		DATE_FORMAT(birth_date, '%m'), 
+		DATE_FORMAT(birth_date, '%y')
+		)) AS username
     FROM employees
     GROUP BY username
-    HAVING COUNT(*) > 1;
-SELECT COUNT(*) FROM oneil_2093.dup_users;
-DROP TABLE oneil_2093.dup_users;
+    HAVING COUNT(*) > 1
+    ) AS a;
+
+-- CREATE TEMPORARY TABLE oneil_2093.dup_users AS
+-- SELECT LOWER( CONCAT(
+-- 	SUBSTR(first_name, 1, 1), 
+-- 	LEFT(last_name, 4), 
+--     '_', 
+--     DATE_FORMAT(birth_date, '%m'), 
+--     DATE_FORMAT(birth_date, '%y')
+--     )) AS username
+--     FROM employees
+--     GROUP BY username
+--     HAVING COUNT(*) > 1;
+-- SELECT COUNT(*) FROM oneil_2093.dup_users;
+-- DROP TABLE oneil_2093.dup_users;
 
 DESCRIBE salaries;
 /* B1 Determine the historic average salary for each employee. 
