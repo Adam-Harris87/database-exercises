@@ -12,17 +12,17 @@ RIGHT JOIN will return 5 results */
 SELECT * 
 FROM users u
 	JOIN roles r
-	ON u.role_id = r.id;
+		ON u.role_id = r.id;
         
 SELECT * 
 FROM users u
 	LEFT JOIN roles r
-	ON u.role_id = r.id;
+		ON u.role_id = r.id;
         
 SELECT * 
 FROM users u
 	RIGHT JOIN roles r
-	ON u.role_id = r.id;
+		ON u.role_id = r.id;
         
 /* 1-3 Although not explicitly covered in the lesson, aggregate functions like count can be used with join queries.
 Use count and the appropriate join type to get a list of roles along with the number of users that has the role.
@@ -30,7 +30,7 @@ Hint: You will also need to use group by in the query. */
 SELECT r.name, COUNT(*)
 FROM roles r
 	JOIN users u
-	ON r.id = u.role_id
+		ON r.id = u.role_id
 GROUP BY r.name;
     
 -- 2-1 Use the employees database.
@@ -47,9 +47,9 @@ SELECT d.dept_name AS 'Department Name',
 	CONCAT(e.first_name, ' ', e.last_name) AS 'Department Manager'
 FROM departments d
 	JOIN dept_manager dm
-	ON d.dept_no = dm.dept_no
+		ON d.dept_no = dm.dept_no
 	JOIN employees e
-	ON dm.emp_no = e.emp_no
+		ON dm.emp_no = e.emp_no
 WHERE dm.to_date = '9999-01-01'
 ORDER BY d.dept_name;
     
@@ -58,9 +58,9 @@ SELECT d.dept_name AS 'Department Name',
 	CONCAT(e.first_name, ' ', e.last_name) AS 'Department Manager'
 FROM departments d
 	JOIN dept_manager dm
-	ON d.dept_no = dm.dept_no
+		ON d.dept_no = dm.dept_no
 	JOIN employees e
-	ON dm.emp_no = e.emp_no
+		ON dm.emp_no = e.emp_no
 WHERE (dm.to_date = '9999-01-01')
 	AND (e.gender = 'F')
 ORDER BY d.dept_name;
@@ -73,9 +73,9 @@ DESCRIBE titles;
 SELECT t.title AS Title, COUNT(*) AS Count
 FROM titles t
 	JOIN dept_emp de
-	ON t.emp_no = de.emp_no
+		ON t.emp_no = de.emp_no
 	JOIN departments d
-	ON de.dept_no = d.dept_no
+		ON de.dept_no = d.dept_no
 WHERE (t.to_date = '9999-01-01')
 	AND (de.to_date = '9999-01-01')
 	AND (d.dept_name = 'Customer Service')
@@ -90,11 +90,11 @@ SELECT d.dept_name AS 'Department Name',
 	CONCAT(e.first_name, ' ', e.last_name) AS Name, s.salary
 FROM salaries s
 	JOIN dept_manager dm
-	ON s.emp_no = dm.emp_no
+		ON s.emp_no = dm.emp_no
 	JOIN departments d
-	ON dm.dept_no = d.dept_no
+		ON dm.dept_no = d.dept_no
 	JOIN employees e
-	ON dm.emp_no = e.emp_no
+		ON dm.emp_no = e.emp_no
 WHERE (dm.to_date = '9999-01-01')
 	AND (s.to_date = '9999-01-01')
 ORDER BY d.dept_name;
@@ -106,7 +106,7 @@ DESCRIBE dept_emp;
 SELECT d.dept_no, d.dept_name, COUNT(*) AS Count
 FROM departments d
 	JOIN dept_emp de
-	ON d.dept_no = de.dept_no
+		ON d.dept_no = de.dept_no
 WHERE de.to_date = '9999-01-01'
 GROUP BY d.dept_name
 ORDER BY d.dept_no;
@@ -118,9 +118,9 @@ DESCRIBE salaries;
 SELECT d.dept_name, AVG(s.salary) AS avgerage_salary
 FROM departments d
 	JOIN dept_emp de
-	ON d.dept_no = de.dept_no
+		ON d.dept_no = de.dept_no
 	JOIN salaries s
-	ON de.emp_no = s.emp_no
+		ON de.emp_no = s.emp_no
 WHERE (de.to_date = '9999-01-01')
 	AND (s.to_date = '9999-01-01')
 GROUP BY d.dept_name
@@ -131,28 +131,28 @@ LIMIT 1;
 SELECT e.first_name, e.last_name
 FROM employees e
 	JOIN dept_emp de
-	ON e.emp_no = de.emp_no
+		USING (emp_no)
 	JOIN departments d
-	ON de.dept_no = d.dept_no
+		USING (dept_no)
 	JOIN salaries s
-	ON e.emp_no = s.emp_no
+		USING (emp_no)
 WHERE (de.to_date = '9999-01-01')
 	AND (s.to_date = '9999-01-01')
 	AND (d.dept_name = 'Marketing')
 ORDER BY s.salary DESC
 LIMIT 1;
     
--- 2-9 Which current department manager has the highest salary?
+-- 2-9 Which current department manager has the highest salary?  Vishwani Minakawa
 SELECT e.first_name, e.last_name, s.salary, d.dept_name
 FROM employees e
 	JOIN dept_manager dm
-	ON e.emp_no = dm.emp_no
+		ON e.emp_no = dm.emp_no
 	JOIN salaries s
-	ON e.emp_no = s.emp_no
+		ON e.emp_no = s.emp_no
 	JOIN departments d
-	ON dm.dept_no = d.dept_no
-WHERE (dm.to_date = '9999-01-01')
-	AND (s.to_date = '9999-01-01')
+		ON dm.dept_no = d.dept_no
+WHERE (dm.to_date > NOW())
+	AND (s.to_date > CURDATE())
 ORDER BY s.salary DESC
 LIMIT 1;
     
@@ -161,11 +161,11 @@ LIMIT 1;
 SELECT d.dept_name, ROUND(AVG(s.salary), 0) AS average_salary
 FROM departments d
 	JOIN dept_emp de
-	ON d.dept_no = de.dept_no
+		ON d.dept_no = de.dept_no
 	JOIN employees e
-	ON de.emp_no = e.emp_no
+		ON de.emp_no = e.emp_no
 	JOIN salaries s
-	ON e.emp_no = s.emp_no
+		ON e.emp_no = s.emp_no
 GROUP BY d.dept_name
 ORDER BY average_salary DESC;
     
@@ -175,13 +175,13 @@ SELECT CONCAT(e.first_name, ' ', e.last_name) AS 'Employee Name',
 	CONCAT(dme.first_name, ' ', dme.last_name) AS 'Department Manager'
 FROM employees e
 	JOIN dept_emp de
-	ON e.emp_no = de.emp_no
+		ON e.emp_no = de.emp_no
 	JOIN departments d
-	ON de.dept_no = d.dept_no
+		ON de.dept_no = d.dept_no
 	JOIN dept_manager dm
-	ON dm.dept_no = d.dept_no
+		ON dm.dept_no = d.dept_no
 	JOIN employees dme
-	ON dm.emp_no = dme.emp_no
+		ON dm.emp_no = dme.emp_no
 WHERE (de.to_date = '9999-01-01')
 	AND (dm.to_date = '9999-01-01')
 ORDER BY d.dept_name, e.last_name, e.first_name;
@@ -191,11 +191,11 @@ SELECT CONCAT(e.first_name, ' ', e.last_name) AS Employee_Name,
 	d.dept_name, s.salary
 FROM employees e
 	JOIN dept_emp de
-	ON e.emp_no = de.emp_no
+		ON e.emp_no = de.emp_no
 	JOIN departments d
-	ON de.dept_no = d.dept_no
+		ON de.dept_no = d.dept_no
 	JOIN salaries s
-	ON e.emp_no = s.emp_no
+		ON e.emp_no = s.emp_no
 WHERE (s.to_date = '9999-01-01')
 	AND (de.to_date = '9999-01-01')
 	AND (de.dept_no, s.salary) IN (
