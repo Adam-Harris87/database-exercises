@@ -793,9 +793,11 @@ LEFT JOIN
 	USING (pizza_id)
 ;
 
+USE pizza;
 SELECT * 
 FROM oneil_2093.pizza_totals;
 
+SELECT * FROM modifiers;
 SELECT * FROM pizza_modifiers;
 -- 6.12 What is the average price of pizzas that have no cheese?
 -- no cheese = modifier_id = 3
@@ -803,6 +805,34 @@ SELECT ROUND(AVG(pizza_cost), 2) AS avg_no_cheese_price
 FROM oneil_2093.pizza_totals pt
 	JOIN pizza_modifiers pm
 		ON pt.pizza_id = pm.pizza_id
-        AND pm.modifier_id = 3
+        AND pm.modifier_id = 
+			(SELECT modifier_id
+            FROM modifiers
+            WHERE modifier_name = 'no cheese')
 ;
 
+-- 6.13 What is the most common topping for pizzas that are well done?
+SELECT t.topping_name, COUNT(*) AS total
+FROM pizza_toppings pt
+	JOIN pizza_modifiers pm
+		ON pt.pizza_id = pm.pizza_id
+        AND pm.modifier_id =
+			(SELECT modifier_id
+			FROM modifiers
+			WHERE modifier_name = 'well done')
+	LEFT JOIN toppings t
+		USING (topping_id)
+GROUP BY t.topping_name
+ORDER BY total DESC
+LIMIT 1;
+
+-- 6.14 How many pizzas are only cheese (i.e. have no toppings)?
+SELECT COUNT(p.pizza_id)
+FROM pizzas p
+	LEFT JOIN pizza_toppings pt
+		USING (pizza_id)
+WHERE pt.topping_id IS NULL;
+
+-- 6.15 How many orders consist of pizza(s) that are only cheese? 
+-- What is the average price of these orders? 
+-- The most common pizza size?
