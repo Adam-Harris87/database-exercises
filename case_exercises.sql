@@ -1,6 +1,6 @@
 USE employees;
 
-/* Write a query that returns all employees, their department number, their start date, their end date, 
+/* 1 Write a query that returns all employees, their department number, their start date, their end date, 
 and a new column 'is_current_employee' that is a 1 if the employee is still with the company and 0 if not. */
 SELECT first_name, last_name, dept_no, hire_date, to_date,
 	IF(to_date > NOW(), 1, 0) AS is_current_employee
@@ -36,12 +36,9 @@ SELECT
     ROUND(AVG(CASE WHEN de.dept_no IN ('d004', 'd006') THEN salary ELSE NULL END), 2) AS 'Prod & QM',
     ROUND(AVG(CASE WHEN de.dept_no IN ('d005', 'd008') THEN salary ELSE NULL END), 2) AS 'R&D',
     ROUND(AVG(CASE WHEN de.dept_no = 'd009' THEN salary ELSE NULL END), 2) AS 'Customer Service'
-FROM departments d
-	JOIN dept_emp de
-		ON d.dept_no = de.dept_no
-        AND de.to_date > CURDATE()
+FROM dept_emp de
 	JOIN salaries s
 		ON de.emp_no = s.emp_no
         AND s.to_date > CURDATE()
+WHERE de.to_date > CURDATE()
 ;
-		

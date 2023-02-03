@@ -644,6 +644,7 @@ SELECT * FROM pizza_toppings;
 SELECT * FROM pizzas;
 DESCRIBE pizza_toppings;
 
+-- show me the pizza
 SELECT * 
 FROM pizzas
 	LEFT JOIN pizza_modifiers
@@ -668,10 +669,7 @@ GROUP BY pizza_id
 
 -- list of pizza_modifier cost by pizza_id
 SELECT pizza_id,
-	CASE modifier_id
-		WHEN 1 THEN 1.99
-		ELSE 0
-    END AS ext_cost
+	IF(modifier_id = 1, 1.99, 0) AS ext_cost
 FROM pizzas
 	JOIN pizza_modifiers
 		USING (pizza_id)
@@ -696,12 +694,15 @@ FROM (
 GROUP BY pizza_id
 ;
 
--- Holy crap it works!
+USE pizza;
+-- 6.11 Holy crap it works!
 -- Get order totals
-SELECT ROUND(SUM(pizza_cost), 2) AS order_total, order_id 
+SELECT order_id, ROUND(SUM(pizza_cost), 2) AS order_total
 FROM
 	-- get overall cost per pizza_id
-	(SELECT pizza_id, (size_price + IFNULL(top_cost, 0) + ext_cost) AS pizza_cost, order_id
+	(SELECT pizza_id, 
+		(size_price + IFNULL(top_cost, 0) + IFNULL(ext_cost, 0)) AS pizza_cost, 
+        order_id
 	FROM pizzas
 	LEFT JOIN
 	-- get size cost per pizza_id
@@ -710,20 +711,16 @@ FROM
 			JOIN sizes
 				USING (size_id)
 		GROUP BY pizza_id
-		) as a
+		) as size_cost
 		USING (pizza_id)
 	LEFT JOIN
-		-- list of pizza_modifier cost by pizza_id
-		(SELECT pizza_id,
-			CASE modifier_id
-				WHEN 1 THEN 1.99
-				WHEN NULL THEN 0
-				ELSE 0
-			END AS ext_cost
+		-- get pizza_modifier cost by pizza_id
+		(SELECT pizza_id, 
+			IF(modifier_id = 1, 1.99, 0) AS ext_cost
 		FROM pizzas
 			LEFT JOIN pizza_modifiers
 				USING (pizza_id)
-		) as b
+		) as mod_cost
 		USING (pizza_id)
 	LEFT JOIN
 		-- get the topping cost per pizza_id
@@ -743,10 +740,69 @@ FROM
 					USING (topping_id)
 			) AS top_list
 		GROUP BY pizza_id
-		) as c
+		) as top_cost
 		USING (pizza_id)
-	-- ORDER BY pizza_id
-    ) AS totals
+    ) AS pizza_totals
 GROUP BY order_id
 ORDER BY order_id
 ;
+
+
+CREATE TEMPORARY TABLE oneil_2093.pizza_totals AS
+SELECT pizza_id, 
+	ROUND(size_price + IFNULL(top_cost, 0) + IFNULL(ext_cost, 0), 2) AS pizza_cost, 
+	order_id
+FROM pizzas
+LEFT JOIN
+-- get size cost per pizza_id
+	(SELECT pizza_id, size_price
+	FROM pizzas
+		JOIN sizes
+			USING (size_id)
+	GROUP BY pizza_id
+	) as size_cost
+	USING (pizza_id)
+LEFT JOIN
+	-- get pizza_modifier cost by pizza_id
+	(SELECT pizza_id, 
+		IF(modifier_id = 1, 1.99, 0) AS ext_cost
+	FROM pizzas
+		LEFT JOIN pizza_modifiers
+			USING (pizza_id)
+	) as mod_cost
+	USING (pizza_id)
+LEFT JOIN
+	-- get the topping cost per pizza_id
+	(SELECT pizza_id, ROUND(SUM(sub_price), 2) AS top_cost
+	FROM (
+		SELECT pizza_id,
+			CASE topping_amount
+				WHEN 'light' THEN ROUND(topping_price * 0.5, 2)
+				WHEN 'extra' THEN ROUND(topping_price * 1.5, 2)
+				WHEN 'double' THEN ROUND(topping_price * 2, 2)
+				ELSE topping_price
+			END AS sub_price
+		FROM pizzas
+			LEFT JOIN pizza_toppings
+				USING (pizza_id)
+			LEFT JOIN toppings
+				USING (topping_id)
+		) AS top_list
+	GROUP BY pizza_id
+	) as top_cost
+	USING (pizza_id)
+;
+
+SELECT * 
+FROM oneil_2093.pizza_totals;
+
+SELECT * FROM pizza_modifiers;
+-- 6.12 What is the average price of pizzas that have no cheese?
+-- no cheese = modifier_id = 3
+SELECT ROUND(AVG(pizza_cost), 2) AS avg_no_cheese_price
+FROM oneil_2093.pizza_totals pt
+	JOIN pizza_modifiers pm
+		ON pt.pizza_id = pm.pizza_id
+        AND pm.modifier_id = 3
+;
+
