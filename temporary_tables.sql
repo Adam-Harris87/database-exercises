@@ -1,5 +1,5 @@
 USE employees;
-
+DROP TABLE oneil_2093.employees_with_departments;
 /* 1 Using the example from the lesson, create a temporary table called employees_with_departments that contains 
 first_name, last_name, and dept_name for employees currently with that department. 
 Be absolutely sure to create this table on your own database. If you see "Access denied for user ...", 
@@ -17,10 +17,10 @@ USE oneil_2093;
 /* 1.a Add a column named full_name to this table. It should be a VARCHAR whose length is the sum of 
 the lengths of the first name and last name columns. */
 SELECT MAX(LENGTH(first_name)) + MAX(LENGTH(last_name))
-FROM employees_with_departments; -- SUM is 30 
+FROM employees_with_departments; -- SUM is 30 + 1(SPACE) = 31
 
 ALTER TABLE employees_with_departments
-ADD full_name VARCHAR(30);
+ADD full_name VARCHAR(31);
 
 -- 1.b Update the table so that full name column contains the correct data.
 UPDATE employees_with_departments
@@ -52,6 +52,7 @@ UPDATE payment
 SET amount = amount * 100;
 ALTER TABLE payment
 MODIFY amount INT;
+
 SELECT * FROM payment;
 
 USE employees;

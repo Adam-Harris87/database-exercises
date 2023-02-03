@@ -27,6 +27,12 @@ SELECT
 	COUNT(CASE SUBSTR(birth_date, 3, 1) WHEN 6 THEN 1 ELSE NULL END) AS '1960s' 
 FROM employees;
 
+-- SELECT
+-- 	CONCAT(SUBSTR(birth_date, 1, 3), '0') as decade,
+--     COUNT(*)
+-- FROM employees
+-- GROUP BY decade;
+
 SELECT * FROM departments;
 /* 4 What is the current average salary for each of the following department groups: 
 R&D, Sales & Marketing, Prod & QM, Finance & HR, Customer Service? */
