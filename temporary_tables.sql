@@ -105,6 +105,8 @@ SELECT * FROM averages;
 the historic overall average, and the historic z-scores for salary. 
 Do the z-scores for current department average salaries 
 (from exercise 3) tell a similar or a different story than the historic department salary z-scores? */
+
+-- To get the historical data, we can simply remove the to_date comparisons from the previous commands
 CREATE TEMPORARY TABLE oneil_2093.historic_averages AS
 SELECT dept_name, ROUND(AVG(salary), 2) AS dept_avg
 FROM dept_emp de
@@ -112,4 +114,31 @@ FROM dept_emp de
 		ON de.emp_no = s.emp_no
 	JOIN departments d
 		USING (dept_no)
+        
 GROUP BY dept_no;
+ALTER TABLE historic_averages
+ADD COLUMN current_avg DECIMAL(10, 2);
+UPDATE historic_averages
+SET current_avg = ROUND((
+	SELECT AVG(salary) 
+    FROM employees.salaries 
+	), 2);
+    
+ALTER TABLE historic_averages
+ADD COLUMN std_dev DECIMAL(10, 2);
+UPDATE historic_averages
+SET std_dev = ROUND((
+	SELECT STDDEV(salary) 
+    FROM employees.salaries 
+    ), 2);
+
+ALTER TABLE historic_averages
+ADD COLUMN z_score DECIMAL(10, 2);
+UPDATE historic_averages
+SET z_score = (
+	(dept_avg - current_avg) / std_dev);
+    
+SELECT * FROM historic_averages;
+-- worst dept historically is Human Resources
+-- best dept historically is Sales
+-- this is the same as current
