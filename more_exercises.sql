@@ -829,10 +829,34 @@ LIMIT 1;
 -- 6.14 How many pizzas are only cheese (i.e. have no toppings)?
 SELECT COUNT(p.pizza_id)
 FROM pizzas p
-	LEFT JOIN pizza_toppings pt
-		USING (pizza_id)
-WHERE pt.topping_id IS NULL;
-
--- 6.15 How many orders consist of pizza(s) that are only cheese? 
+WHERE pizza_id NOT IN (
+	SELECT pizza_id
+	FROM pizza_toppings)
+;
+   
+-- 6.15 How many orders consist of pizza(s) that are only cheese? 572
+SELECT COUNT(order_id)
+FROM pizzas
+WHERE order_id NOT IN(
+	SELECT order_id
+	FROM pizzas
+	WHERE pizza_id IN (
+		SELECT pizza_id
+		FROM pizza_toppings)
+	)
+;
+SELECT * FROM oneil_2093.pizza_totals;
 -- What is the average price of these orders? 
+SELECT *
+FROM pizzas p
+	JOIN oneil_2093.pizza_totals
+		USING (pizza_id)
+WHERE order_id NOT IN(
+	SELECT order_id
+	FROM pizzas
+	WHERE pizza_id IN (
+		SELECT pizza_id
+		FROM pizza_toppings)
+	)
+;
 -- The most common pizza size?
