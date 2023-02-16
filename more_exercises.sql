@@ -860,3 +860,5 @@ WHERE order_id NOT IN(
 	)
 ;
 -- The most common pizza size?
+
+SHOW DATABASES;

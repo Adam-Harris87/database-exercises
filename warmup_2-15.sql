@@ -4,7 +4,12 @@ USE sakila;
 SHOW tables;
 DESCRIBE customer;
 
-SELECT active, COUNT(customer_id) as user_total
+SELECT 
+	CASE active
+		WHEN 1 THEN 'Active'
+        WHEN 0 THEN 'Inactive'
+	END AS user_activity,
+    COUNT(customer_id) as user_total
 FROM customer
 GROUP BY active;
 
